@@ -1,0 +1,525 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MyBooks.Domain
+@using MyBooks.Domain.Enum
+@model List<MyBooks.Domain.Entity.AuthorEntity>
+@{
+    ViewData["Title"] = "MyBooks";
+}
+
+<style>
+    .form-group {
+        margin-bottom: 5px;
+    }
+
+    #saveAuthor {
+        margin-top: 10px;
+    }
+</style>
+
+
+<button id="addAuthorClick" type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAuthorModal">
+    Add Author
+</button>
+<div class="modal fade" id="addAuthorModal" tabindex="-1" role="dialog" aria-labelledby="addAuthorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAuthorModalLabel">Add New Author</h5>
+                <button type="button" class="close" aria-label="Close" onclick="closeModal('#addAuthorModal')">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addAuthorForm" asp-action="AddAuthor" method="post">
+                    <div class="form-group">
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" class="form-control" id="lastName" name="LastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="firstName">First Name:</label>
+                        <input type="text" class="form-control" id="firstName" name="FirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="middleName">Middle Name:</label>
+                        <input type="text" class="form-control" id="middleName" name="MiddleName">
+                    </div>
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth:</label>
+                        <input type="date" class="form-control" id="dateOfBirth" name="DateOfBirth" required>
+                    </div>
+
+                    <button id="saveAuthor" type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="editAuthorModal" tabindex="-1" role="dialog" aria-labelledby="editAuthorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAuthorModalLabel">Edit Author</h5>
+                <button type="button" class="close" aria-label="Close" onclick="closeModal('#editAuthorModal')">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editAuthorForm" asp-action="UpdateAuthor" method="post">
+                    <div class="form-group">
+                        <label for="editLastName">Last Name:</label>
+                        <input type="text" class="form-control" id="editLastName" name="LastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editFirstName">First Name:</label>
+                        <input type="text" class="form-control" id="editFirstName" name="FirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMiddleName">Middle Name:</label>
+                        <input type="text" class="form-control" id="editMiddleName" name="MiddleName">
+                    </div>
+                    <div class="form-group">
+                        <label for="editDateOfBirth">Date of Birth:</label>
+                        <input type="date" class="form-control" id="editDateOfBirth" name="DateOfBirth" required>
+                    </div>
+
+                    <input type="hidden" id="hiddenAuthorId" name="AuthorId" value="">
+                    
+                    
+                    <button id="saveEditAuthor" type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addBookModal" tabindex="-1" role="dialog" aria-labelledby="addBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBookModalLabel">Add New Book</h5>
+                <button type="button" class="close" aria-label="Close" onclick="closeModal('#addBookModal')">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addBookForm" asp-action="AddBook" method="post">
+                    <div class="form-group">
+                        <label for="bookTitle">Title:</label>
+                        <input type="text" class="form-control" id="bookTitle" name="BookTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pageCount">Page Count:</label>
+                        <input type="number" class="form-control" id="pageCount" name="PageCount" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="col-form-label">Genre</label>
+                        <select asp-items="Html.GetEnumSelectList<Genre>()" class="form-control mb-3" name="Genre">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id="authorId" name="AuthorId" value="">
+                    <button id="saveBookInModal" type="submit" class="btn btn-success">Okay</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="authorDetailsModal" tabindex="-1" role="dialog" aria-labelledby="authorDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="authorDetailsModalLabel">Author Details</h5>
+                <button type="button" class="close" aria-label="Close" onclick="closeModal('#authorDetailsModal')">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="authorDetailsContent">
+                    <h4>Author Details</h4>
+                    <p><strong>Last Name:</strong> <span id="LastName"></span></p>
+                    <p><strong>First Name:</strong> <span id="FirstName"></span></p>
+                    <p><strong>Middle Name:</strong> <span id="MiddleName"></span></p>
+                    <p><strong>Books Count:</strong> <span id="BooksCount"></span></p>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h1>Authors List</h1>
+
+<table class="table table-light table-bordered" id="bookTableId">
+    <thead>
+        <tr>
+            <th>Author</th>
+            <th>Books Count</th>
+            <th>Actions</th>
+            <th>Actions</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+</table>
+
+
+@section Scripts
+{
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    
+    <script src="https://cdn.datatables.net/plug-ins/1.13.7/sorting/uk-string.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    
+    <script>
+        function closeModal(modalId) {
+            $(modalId).modal('hide');
+        }
+    </script>
+    <script>
+        $('#saveAuthor').on('click', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddAuthor", "Book")',
+                data: $('#addAuthorForm').serialize(), 
+                success: function (response) {
+                    Swal.fire({
+                        title: 'Information',
+                        text: response.description,
+                        icon: 'success',
+                        confirmButtonText: 'Okay'
+                    });
+                    document.getElementById('addAuthorForm').reset();
+                    dataTable.ajax.reload();
+                },
+                error: function (response) {
+                    Swal.fire({
+                        title: 'Oops(',
+                        text: response.responseJSON.description,
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                    });
+                },
+            });
+        });
+        </script>
+            
+        <script>
+        
+        $('#saveBook').on('click', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("AddBook", "Book")',
+                    data: $('#addBookForm').serialize(),
+                    success: function (response) {
+                        Swal.fire({
+                            title: 'Information',
+                            text: response.description,
+                            icon: 'success',
+                            confirmButtonText: 'Okay'
+                        });
+                        document.getElementById('addBookForm').reset();
+                        dataTable.ajax.reload();
+                        closeModal('#addBookModal');
+                    },
+                    error: function (response) {
+                        Swal.fire({
+                            title: 'Oops(',
+                            text: response.responseJSON.description,
+                            icon: 'error',
+                            confirmButtonText: 'Okay'
+                        });
+                    },
+                });
+            });
+    </script>
+    
+   <script>
+       $('#saveEditAuthor').on('click', function (e) {
+           e.preventDefault();
+           var authorId = $('#hiddenAuthorId').val();
+           var data = {
+               AuthorId: authorId,
+               AuthorLastName: $('#editLastName').val(),
+               AuthorFirstName: $('#editFirstName').val(),
+               AuthorMiddleName: $('#editMiddleName').val(),
+               AuthorDateOfBirth: $('#editDateOfBirth').val()
+           };
+   
+           $.ajax({
+               type: 'POST',
+               url: '@Url.Action("UpdateAuthor", "Book")',
+               data: JSON.stringify(data),
+               contentType: 'application/json',
+               success: function (response) {
+                   Swal.fire({
+                       title: 'Інформація',
+                       text: response.description,
+                       icon: 'success',
+                       confirmButtonText: 'Ок'
+                   });
+                   deleteAuthor(authorId);
+                   dataTable.ajax.reload();
+                   closeModal('#editAuthorModal');
+   
+                   // При успішному збереженні відредагованого автора, відображаємо модальне вікно "addBookModal"
+                   $('#addBookModal').modal('show');
+               },
+               error: function (response) {
+                   Swal.fire({
+                       title: 'Помилка',
+                       text: response.responseJSON.description || 'Виникла помилка при обробці вашого запиту.',
+                       icon: 'error',
+                       confirmButtonText: 'Ок'
+                   });
+               },
+           });
+       });
+   
+       // Додаємо обробник для відправки даних про книгу при натисканні кнопки "Okay" в "addBookModal"
+       $('#saveBookInModal').on('click', function (e) {
+           e.preventDefault();
+           var authorId = $('#hiddenAuthorId').val();
+           $('#authorId').val(authorId);  // Встановлюємо authorId у форму addBookForm
+           $.ajax({
+               type: 'POST',
+               url: '@Url.Action("AddBook", "Book")',
+               data: $('#addBookForm').serialize(),
+               success: function (response) {
+                   Swal.fire({
+                       title: 'Success',
+                       text: response.description,
+                       icon: 'success',
+                       confirmButtonText: 'Ок'
+                   });
+                   document.getElementById('addBookForm').reset();
+                   dataTable.ajax.reload();
+                   closeModal('#addBookModal');
+               },
+               error: function (response) {
+                   Swal.fire({
+                       title: 'Oops(',
+                       text: response.responseJSON.description,
+                       icon: 'error',
+                       confirmButtonText: 'Ок'
+                   });
+               },
+           });
+       });
+   </script>
+
+
+    <script>
+        $(document).ready(function () {
+            $('#addAuthorClick').on('click', function () {
+                $('#addAuthorModal').modal('show');
+            });
+        });
+    </script>
+    
+    <script>
+        $(document).ready(function () {
+            // Add click event listener to the Details button
+            $('#bookTableId').on('click', '.btn-details', function () {
+                var authorId = $(this).data('author-id');
+                openDetailsModal(authorId);
+            });
+        });
+    
+        // Function to open the details modal
+        // Function to open the details modal
+        function openDetailsModal(authorId) {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetAuthorDetails", "Book")',
+                data: { authorId: authorId },
+                contentType: 'application/json',
+                success: function (authorDetails) {
+                    if (authorDetails) {
+                        // Populate the content of the author details modal
+                        $('#LastName').text(authorDetails.LastName);
+                        $('#FirstName').text(authorDetails.FirstName);
+                        $('#MiddleName').text(authorDetails.MiddleName);
+                        $('#BooksCount').text(authorDetails.BooksCount);
+        
+                        // Display the author details modal
+                        $('#authorDetailsModal').modal('show');
+                    } else {
+                        console.error('Invalid or missing data in the response:', authorDetails);
+                        // Handle the case where authorDetails is undefined or null
+                        // You can show an error message or take appropriate action here
+                    }
+                },
+                error: function (error) {
+                    console.error('Error fetching author details:', error);
+                }
+            });
+        }
+
+    </script>
+
+
+
+    <script>
+   function confirmDelete(authorId) {
+        swalWithBootstrapButtons.fire({
+            title: "Are you sure?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "Cancel",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteAuthor(authorId);
+            }
+        });
+    }
+    
+   function deleteAuthor(authorId) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeleteAuthor", "Book")',
+            data: { authorId: authorId },
+            success: function (response) {
+                if (response.statusCode === 400 && response.statusCode === 500) {
+                    Swal.fire({
+                        title: 'Oops(',
+                        text: 'There was an error processing your request: ' + response.description,
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Success',
+                        text: '',
+                        icon: 'success',
+                        confirmButtonText: 'Okay'
+                    });
+                    dataTable.ajax.reload();
+                }
+            },
+
+
+            error: function (response) {
+                Swal.fire({
+                    title: 'Oops(',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                });
+            }
+        });
+    }
+    
+   const swalWithBootstrapButtons = Swal.mixin({
+       customClass: {
+           confirmButton: "btn btn-success",
+           cancelButton: "btn btn-danger"
+       },
+       buttonsStyling: false
+   });
+    
+   function openEditAuthorModalFromButton(button) {
+           var authorId = $(button).data('author-id');
+           openEditAuthorModal(authorId);
+   }
+   
+   let dataTable = $('#bookTableId').DataTable({
+          info: false,
+          serverSide: true,
+          searching: false,
+          paging: false,
+          sorting: true,
+          ajax: {
+              url: "@Url.Action("TaskHandler")",
+              method: 'POST',
+              data: {
+                  Name: $('input[name = "nameTask"]').val(),
+              }
+          },
+          columns: [
+              { 
+                  data: 'lastName', 
+                  orderable: true
+              },
+              { data: 'booksCount' },
+              {
+                  data: null,
+                  render: function (data, type, row) {
+                      return '<button class="btn btn-dark btn-sm center-block" data-author-id="' + row.id + '" onclick="openEditAuthorModalFromButton(this)">Edit</button>';
+                  }
+              },
+              {
+                  data: null,
+                  sortable: false,
+                  render: function (data, type, row) {
+                      return '<button id="detailsClick" class="btn btn-dark btn-sm center-block" onclick="confirmDelete(' + row.id + ')">Delete</button>';
+                  }
+              },
+              {
+                  data: 'id',
+                  render: function(data, type, row) {
+                     return '<button class="btn btn-dark btn-sm center-block" onclick="openDetailsModal(' + row.id + ')">Details</button>';
+                  }
+              }
+          ],
+          order: [[0, 'asc']],
+          createdRow: function (nRow, data) {
+   
+              for (var i = 0; i < dataTable.columns().header().length - 3; i++) {
+                  $('td', nRow).eq(i).css('cursor', 'pointer');
+                  $('td', nRow).eq(i).on('click', null);
+              }
+              
+              $('td button:contains("Delete")', nRow).on('click', function() { confirmDelete(data.id); });
+          }
+      });
+   
+   dataTable.on('draw.dt', function () {
+       $('[data-toggle="tooltip"]').tooltip();
+   });
+   
+       function openModal(action, authorId) {
+           console.log(action, authorId);
+       }
+   </script>
+
+    <script>
+        function openEditAuthorModal(authorId) {
+            $.ajax({
+                type: 'GET',
+                url: '/Book/GetAuthorById',
+                data: { authorId: authorId },
+                contentType: 'application/json',
+                success: function (author) {
+                    
+    
+                    
+                    var formattedDate = moment(author.dateOfBirth).format('YYYY-MM-DD');
+    
+                    // Заповнюємо дані форми редагування
+                    $('#editLastName').val(author.lastName);
+                    $('#editFirstName').val(author.firstName);
+                    $('#editMiddleName').val(author.middleName);
+                    $('#editDateOfBirth').val(formattedDate); // Встановлюємо відформатовану дату
+    
+                    $('#hiddenAuthorId').val(authorId);
+    
+                    // Відображаємо модальне вікно редагування
+                    $('#editAuthorModal').modal('show');
+                },
+                error: function (error) {
+                    console.error('Error fetching author data:', error);
+                }
+            });
+            }
+    </script>
+}

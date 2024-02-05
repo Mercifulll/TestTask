@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MyBooks.DAL\MyBooks.DAL.csproj" />
+      <ProjectReference Include="..\MyBooks.Domain\MyBooks.Domain.csproj" />
+    </ItemGroup>
+
+</Project>

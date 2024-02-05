@@ -1,0 +1,11 @@
+D:\ASP\Rider\Test\MyBooks\MyBooks.Domain\bin\Debug\net7.0\MyBooks.Domain.deps.json
+D:\ASP\Rider\Test\MyBooks\MyBooks.Domain\bin\Debug\net7.0\MyBooks.Domain.dll
+D:\ASP\Rider\Test\MyBooks\MyBooks.Domain\bin\Debug\net7.0\MyBooks.Domain.pdb
+D:\ASP\Rider\Test\MyBooks\MyBooks.Domain\obj\Debug\net7.0\MyBooks.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\ASP\Rider\Test\MyBooks\MyBooks.Domain\obj\Debug\net7.0\MyBooks.Domain.AssemblyInfoInputs.cache
+D:\ASP\Rider\Test\MyBooks\MyBooks.Domain\obj\Debug\net7.0\MyBooks.Domain.AssemblyInfo.cs
+D:\ASP\Rider\Test\MyBooks\MyBooks.Domain\obj\Debug\net7.0\MyBooks.Domain.csproj.CoreCompileInputs.cache
+D:\ASP\Rider\Test\MyBooks\MyBooks.Domain\obj\Debug\net7.0\MyBooks.Domain.dll
+D:\ASP\Rider\Test\MyBooks\MyBooks.Domain\obj\Debug\net7.0\refint\MyBooks.Domain.dll
+D:\ASP\Rider\Test\MyBooks\MyBooks.Domain\obj\Debug\net7.0\MyBooks.Domain.pdb
+D:\ASP\Rider\Test\MyBooks\MyBooks.Domain\obj\Debug\net7.0\ref\MyBooks.Domain.dll
